@@ -1,8 +1,8 @@
 package com.URLShortener.Shortify.Controller;
 
-import com.URLShortener.Shortify.DTO.OriginalRequest;
 import com.URLShortener.Shortify.DTO.ShortenRequest;
 import com.URLShortener.Shortify.Service.URLService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +20,12 @@ public class URLController {
             return ResponseEntity.badRequest().body("originalUrl must not be null or blank");
         }
         System.out.println(shortenRequest);
-        return urlService.createShortenedURL(shortenRequest.getOriginalURL());
+        return urlService.createShortenedURL(shortenRequest);
     }
 
-    @GetMapping
-    public ResponseEntity<String> getOriginalURL(@RequestBody OriginalRequest originalRequest){
-        System.out.println("Fetching originalURL for " + originalRequest.getShortURL());
-        return urlService.returnOriginalURL(originalRequest.getShortURL());
+    @GetMapping("/{shortURL}")
+    public ResponseEntity<String> getOriginalURL(@PathVariable String shortURL, HttpServletRequest request){
+        System.out.println("Fetching originalURL for " + shortURL);
+        return urlService.returnOriginalURL(shortURL, request);
     }
 }

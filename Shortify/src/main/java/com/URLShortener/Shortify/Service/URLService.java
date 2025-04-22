@@ -31,8 +31,20 @@ public class URLService {
             URLModel urlModel = urlRepository.findByOriginalURL(shortenThis.getOriginalURL());
             return ResponseEntity.ok(urlModel.getShortenedURL());
         }
-        String shortenedURL = shortener.shorten(shortenThis.getOriginalURL());
+
+        //user hasn't provided an expiration time
         if (shortenThis.getExpiryTime() == null) shortenThis.setExpiryTime(LocalDateTime.now().plusHours(24));
+
+        //the user provided shortened url doesn't exist
+        if (!urlRepository.existsByShortenedURL(shortenThis.getCustomURL())){
+            URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenThis.getCustomURL(),
+                    0,LocalDateTime.now());
+            urlRepository.save(urlModel);
+            return ResponseEntity.ok(urlModel.getShortenedURL());
+        }
+
+        String shortenedURL = shortener.shorten(shortenThis.getOriginalURL());
+
         URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenedURL, 0, shortenThis.getExpiryTime());
         urlRepository.save(urlModel);
         return ResponseEntity.ok(shortenedURL);

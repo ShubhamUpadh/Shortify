@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class ShortenRequest {
     private String originalURL;
     private LocalDateTime expiryTime;
+    private String customURL;
 
     public String getOriginalURL() {
         return originalURL;
@@ -15,6 +16,10 @@ public class ShortenRequest {
 
     public void setOriginalURL(String originalURL) {
         this.originalURL = originalURL;
+    }
+
+    public String getCustomURL(){
+        return customURL;
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.URLShortener.Shortify.Service;
 
+import com.URLShortener.Shortify.DTO.ShortenRequest;
 import com.URLShortener.Shortify.Model.URLModel;
 import com.URLShortener.Shortify.Repository.URLRepository;
 import com.URLShortener.Shortify.Utils.Shortener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class URLService {
@@ -13,16 +16,13 @@ public class URLService {
     public URLService(URLRepository urlRepository){
         this.urlRepository = urlRepository;
     }
-    public ResponseEntity<String> createShortenedURL(String originalURL){
-        if (urlRepository.existsByOriginalURL(originalURL)){
-            URLModel urlModel = urlRepository.findByOriginalURL(originalURL);
+    public ResponseEntity<String> createShortenedURL(ShortenRequest shortenThis){
+        if (urlRepository.existsByOriginalURL(shortenThis.getOriginalURL())){
+            URLModel urlModel = urlRepository.findByOriginalURL(shortenThis.getOriginalURL());
             return ResponseEntity.ok(urlModel.getShortenedURL());
         }
-        String shortenedURL = shortener.shorten(originalURL);
-        System.out.println("_________________________");
-        System.out.println(shortenedURL);
-        System.out.println("_________________________");
-        URLModel urlModel = new URLModel(originalURL, shortenedURL, 0);
+        String shortenedURL = shortener.shorten(shortenThis.getOriginalURL());
+        URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenedURL, 0, shortenThis.getExpiryTime());
         urlRepository.save(urlModel);
         return ResponseEntity.ok(shortenedURL);
     }
@@ -31,6 +31,7 @@ public class URLService {
             return (ResponseEntity<String>) ResponseEntity.notFound();
         }
         URLModel urlModel = urlRepository.findByShortenedURL(shortenedURL);
+        if (LocalDateTime.now().isAfter(urlModel.getExpiryTime()))
         urlModel.incrementAccessedCount();
         urlRepository.save(urlModel);
         return ResponseEntity.ok(urlModel.getOriginalURL());

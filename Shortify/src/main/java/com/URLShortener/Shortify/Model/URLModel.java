@@ -1,11 +1,12 @@
 package com.URLShortener.Shortify.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 
 @Entity
+@Table(name = "url")
 public class URLModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,14 +14,16 @@ public class URLModel {
     private String originalURL;
     private String shortenedURL;
     private int accesedCount;
+    private LocalDateTime expiryTime;
 
     public URLModel() {
     }
 
-    public URLModel(String originalURL, String shortenedURL, int accesedCount) {
+    public URLModel(String originalURL, String shortenedURL, int accesedCount, LocalDateTime expiryTime) {
         this.originalURL = originalURL;
         this.shortenedURL = shortenedURL;
         this.accesedCount = accesedCount;
+        this.expiryTime = expiryTime;
     }
 
     public String getOriginalURL() {
@@ -49,5 +52,9 @@ public class URLModel {
 
     public void incrementAccessedCount(){
         this.accesedCount++;
+    }
+
+    public LocalDateTime getExpiryTime() {
+        return this.expiryTime;
     }
 }

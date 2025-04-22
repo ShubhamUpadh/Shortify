@@ -15,6 +15,7 @@ public class CreateAccessLog {
         accessLogModel.setAccessTime(LocalDateTime.now());
         accessLogModel.setReferrer(request.getHeader("Referrer"));
         accessLogModel.setShortURL(shortURL);
+        return accessLogModel;
     }
     private String getClientIP(HttpServletRequest request) {
         String xfHeader = request.getHeader("X-Forwarded-For");

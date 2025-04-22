@@ -32,6 +32,7 @@ public class URLService {
             return ResponseEntity.ok(urlModel.getShortenedURL());
         }
         String shortenedURL = shortener.shorten(shortenThis.getOriginalURL());
+        if (shortenThis.getExpiryTime() == null) shortenThis.setExpiryTime(LocalDateTime.now().plusHours(24));
         URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenedURL, 0, shortenThis.getExpiryTime());
         urlRepository.save(urlModel);
         return ResponseEntity.ok(shortenedURL);

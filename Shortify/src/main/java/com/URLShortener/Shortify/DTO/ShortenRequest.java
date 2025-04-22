@@ -21,4 +21,8 @@ public class ShortenRequest {
     public String toString() {
         return "this is the shortenRequestObject " + originalURL;
     }
+
+    public void setExpiryTime(LocalDateTime newExpiryTime) {
+        this.expiryTime = newExpiryTime;
+    }
 }

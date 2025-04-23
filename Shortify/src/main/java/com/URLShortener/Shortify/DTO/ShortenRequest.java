@@ -24,7 +24,7 @@ public class ShortenRequest {
 
     @Override
     public String toString() {
-        return "this is the shortenRequestObject " + originalURL;
+        return "originalURL " + originalURL + " expiryTime " + expiryTime + " customURL " + customURL;
     }
 
     public void setExpiryTime(LocalDateTime newExpiryTime) {

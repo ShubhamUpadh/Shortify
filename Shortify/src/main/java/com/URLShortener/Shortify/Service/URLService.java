@@ -33,12 +33,15 @@ public class URLService {
         }
 
         //user hasn't provided an expiration time
-        if (shortenThis.getExpiryTime() == null) shortenThis.setExpiryTime(LocalDateTime.now().plusHours(24));
+        if (shortenThis.getExpiryTime() == null) {
+            shortenThis.setExpiryTime(LocalDateTime.now().plusHours(24));
+            System.out.println("Saving expiryTime = " + shortenThis.getExpiryTime());
+        }
 
         //the user provided shortened url doesn't exist
         if (!urlRepository.existsByShortenedURL(shortenThis.getCustomURL())){
             URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenThis.getCustomURL(),
-                    0,LocalDateTime.now());
+                    0, shortenThis.getExpiryTime());
             urlRepository.save(urlModel);
             return ResponseEntity.ok(urlModel.getShortenedURL());
         }
@@ -46,6 +49,7 @@ public class URLService {
         String shortenedURL = shortener.shorten(shortenThis.getOriginalURL());
 
         URLModel urlModel = new URLModel(shortenThis.getOriginalURL(), shortenedURL, 0, shortenThis.getExpiryTime());
+        System.out.println("Writing this url model" + urlModel);
         urlRepository.save(urlModel);
         return ResponseEntity.ok(shortenedURL);
     }
@@ -57,6 +61,9 @@ public class URLService {
         }
         URLModel urlModel = urlRepository.findByShortenedURL(shortenedURL);
         if (LocalDateTime.now().isAfter(urlModel.getExpiryTime())) {
+            System.out.println("Current time = " + LocalDateTime.now());
+            System.out.println("Expiry Time = " + urlModel.getExpiryTime());
+            System.out.println("Expired ? = " + LocalDateTime.now().isAfter(urlModel.getExpiryTime()));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ShortenedURL Expired");
         }
         AccessLogModel accessLogModel = createAccessLog.createLog(request, shortenedURL);
